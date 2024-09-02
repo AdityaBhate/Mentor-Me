@@ -2,7 +2,7 @@ import { currentUser, redirectToSignIn } from "@clerk/nextjs";
 
 import { db } from "@/lib/db";
 
-export async function initialProfile() {
+export const initialProfile = async () => {
 	const user = await currentUser();
 
 	if (!user) {
@@ -16,17 +16,18 @@ export async function initialProfile() {
 	});
 
 	if (profile) {
+		console.log(user);
 		return profile;
 	}
 
 	const newProfile = await db.profile.create({
 		data: {
 			userId: user.id,
-			name: `${user.firstName} ${user.lastName}`,
+			name: `${user.firstName || ""} ${user.lastName || "."}`,
 			imageUrl: user.imageUrl,
 			email: user.emailAddresses[0].emailAddress,
 		},
 	});
 
 	return newProfile;
-}
+};
